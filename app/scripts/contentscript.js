@@ -20,9 +20,6 @@ var ContentController = {
     ContentController._onSyncCallback = function () {
       callback(_.clone(ContentController._data));
     };
-    chrome.runtime.sendMessage({ apiManger: "search" }, function (response) {
-      console.log(response.farewell);
-    });
   },
 
   // request sync
@@ -95,6 +92,8 @@ Annotator.Plugin.Content = function () {
 
       ContentController.onSync(this.annotator.loadAnnotations.bind(this.annotator));
       ContentController.fetch();
+
+      chrome.runtime.onMessage.addListener(ContentController._onSyncCallback);
 
       return this;
     }

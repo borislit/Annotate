@@ -4,7 +4,20 @@ var _createClass = (function () { function defineProperties(target, props) { for
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+function showPageAction(tabId, changeInfo, tab) {
+  chrome.pageAction.show(tabId);
+}
+
+chrome.tabs.onUpdated.addListener(showPageAction);
+
 var BASE_URL = 'http://rest.goltsman.net/annotate';
+
+var Event = function Event(event, data) {
+  _classCallCheck(this, Event);
+
+  this.event = event;
+  this.data = data;
+};
 
 var TabManager = (function () {
   function TabManager() {
@@ -33,8 +46,22 @@ var MessagingService = (function () {
     }
   }, {
     key: 'handleIncomingMessage',
-    value: function handleIncomingMessage() {
-      console.log('Got message');
+    value: function handleIncomingMessage(obj) {
+      var apiTask = obj && obj.apiManger;
+      switch (apiTask) {
+        case "search":
+          ApiManager.getByGroupsList();
+          break;
+        case "groups":
+          ApiManager.getGroupsList();
+          break;
+        case "addAnnotation":
+          ApiManager.getByGroupsList();
+          break;
+        case "vote":
+          ApiManager.vote();
+          break;
+      }
     }
   }, {
     key: 'sendRuntimeMessage',
@@ -72,7 +99,9 @@ var ApiManager = (function () {
       TabManager.executeForActiveTab(function (tabs) {
         var currentURL = tabs[0].url;
         return jQuery.get(BASE_URL + '/groups?uri=?uri=' + currentURL).then(function (data) {
-          MessagingService.sendRuntimeMessage(data.groups);
+          console.log(data);
+          chrome.tabs.sendMessage(tabs[0].id, data, function (response) {});
+          // MessagingService.sendRuntimeMessage(data.groups);
         });
       });
     }
@@ -81,9 +110,11 @@ var ApiManager = (function () {
     value: function getByGroupsList() {
       TabManager.executeForActiveTab(function (tabs) {
         console.log(tabs);
-        var currentURL = "https://en.wikipedia.org/wiki/Infection"; //tabs[0].url;
+        var currentURL = tabs[0].url;
         return jQuery.get(BASE_URL + '/group/bgu?uri=?uri=#{currentURL}').then(function (data) {
-          console.log(data);
+          data = JSON.parse(data);
+          console.log(data.annotations);
+          chrome.tabs.sendMessage(tabs[0].id, data.annotations, function (response) {});
         });
       });
     }
@@ -114,7 +145,26 @@ var ApiManager = (function () {
   return ApiManager;
 })();
 
-MessagingService.registerListeners();
+var EventsRouter = (function () {
+  function EventsRouter() {
+    _classCallCheck(this, EventsRouter);
+  }
+
+  _createClass(EventsRouter, null, [{
+    key: 'initRouting',
+    value: function initRouting() {
+      MessagingService.registerListeners(function (event) {
+        if (event === Events.GROUPS_GET_LIST) {
+          ApiManager.getGroupsList();
+        }
+      });
+    }
+  }]);
+
+  return EventsRouter;
+})();
+
+EventsRouter.initRouting();
 
 console.log('\'Allo \'Allo! Event Page for Page Action Yo');
 //# sourceMappingURL=background.js.map

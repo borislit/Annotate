@@ -22,8 +22,26 @@ class TabManager {
 }
 
 class MessagingService {
-  static registerListeners(listener) {
-    chrome.runtime.onMessage.addListener(listener);
+  static registerListeners() {
+    chrome.runtime.onMessage.addListener(MessagingService.handleIncomingMessage);
+  }
+
+  static handleIncomingMessage(obj) {
+    let apiTask = obj && obj.apiManger;
+    switch (apiTask) {
+      case "search":
+        ApiManager.getByGroupsList();
+        break;
+      case "groups":
+        ApiManager.getGroupsList();
+        break;
+      case "addAnnotation":
+        ApiManager.getByGroupsList();
+        break;
+      case "vote":
+        ApiManager.vote();
+        break;
+    }
   }
 
   static sendRuntimeMessage(data) {
@@ -49,10 +67,13 @@ class ApiManager {
 
   static getGroupsList() {
     TabManager.executeForActiveTab(tabs => {
-      const currentURL = 'https://en.wikipedia.org/wiki/Infection'; //tabs[0].url;
-      return jQuery.get(`${BASE_URL}/groups?uri=${currentURL}`).then((data) => {
-        const event = new Event(Events.GROUP_LIST_UPDATED, JSON.parse(data).groups);
-        MessagingService.sendRuntimeMessage(event);
+      const currentURL = tabs[0].url;
+      return jQuery.get(`${BASE_URL}/groups?uri=?uri=${currentURL}`).then((data) => {
+        console.log(data);
+        chrome.tabs.sendMessage(tabs[0].id, data, function (response) {
+
+        });
+        // MessagingService.sendRuntimeMessage(data.groups);
       });
     });
   }
@@ -60,9 +81,13 @@ class ApiManager {
   static getByGroupsList() {
     TabManager.executeForActiveTab(tabs => {
       console.log(tabs);
-      const currentURL = "https://en.wikipedia.org/wiki/Infection";//tabs[0].url;
+      const currentURL = tabs[0].url;
       return jQuery.get(`${BASE_URL}/group/bgu?uri=?uri=#{currentURL}`).then((data) => {
-        console.log(data);
+        data = JSON.parse(data);
+        console.log(data.annotations);
+        chrome.tabs.sendMessage(tabs[0].id, data.annotations, function (response) {
+
+        });
       });
     });
   }
