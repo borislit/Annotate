@@ -1,11 +1,13 @@
 (function () {
   class MainCtrl {
-    constructor(MessagingService) {
-      MessagingService.sendMessage();
+    constructor(GroupsService) {
+      //GroupsService.getGroupsList().then((groups) => {
+      //  this.groups = groups;
+      //});
     }
   }
 
-  MainCtrl.$inject = ['MessagingService'];
+  MainCtrl.$inject = ['GroupsService'];
 
   angular.module('annotate').controller('MainCtrl', MainCtrl);
 })();

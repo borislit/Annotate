@@ -7,6 +7,8 @@
       this.Events = Events;
 
       this.registerListeners();
+
+      MessagingService.sendMessage(Events.GROUPS_GET_LIST);
     }
 
     registerListeners() {

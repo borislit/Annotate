@@ -22,12 +22,8 @@ class TabManager {
 }
 
 class MessagingService {
-  static registerListeners() {
-    chrome.runtime.onMessage.addListener(MessagingService.handleIncomingMessage);
-  }
-
-  static handleIncomingMessage() {
-    console.log('Got message');
+  static registerListeners(listener) {
+    chrome.runtime.onMessage.addListener(listener);
   }
 
   static sendRuntimeMessage(data) {
@@ -50,10 +46,6 @@ class MessagingService {
 }
 
 class ApiManager {
-
-  constructor() {
-
-  }
 
   static getGroupsList() {
     TabManager.executeForActiveTab(tabs => {
@@ -96,6 +88,16 @@ class ApiManager {
   }
 }
 
-MessagingService.registerListeners();
+class EventsRouter {
+  static initRouting(){
+    MessagingService.registerListeners((event) => {
+      if(event === Events.GROUPS_GET_LIST) {
+        ApiManager.getGroupsList();
+      }
+    })
+  }
+}
+
+EventsRouter.initRouting();
 
 console.log('\'Allo \'Allo! Event Page for Page Action Yo');
