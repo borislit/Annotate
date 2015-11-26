@@ -10,12 +10,7 @@ scripts/*.js
 scripts/*.map
 .idea
 
-app/scripts/*.js
-app/scripts/*.js.map
-
 idea
 .map
-app/scripts/*.js
-app/scripts/*.js.map
 .xml
 
