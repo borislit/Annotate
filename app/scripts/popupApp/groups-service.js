@@ -6,18 +6,26 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 (function () {
   var GroupsService = (function () {
-    function GroupsService($http, $location) {
+    function GroupsService($http, $location, MessagingService, Events) {
       _classCallCheck(this, GroupsService);
 
       this.$http = $http;
       this.$location = $location;
+      this.MessagingService = MessagingService;
+      this.Events = Events;
+
+      this.registerListeners();
+
+      MessagingService.sendMessage(Events.GROUPS_GET_LIST);
     }
 
     _createClass(GroupsService, [{
-      key: 'getGroupsList',
-      value: function getGroupsList() {
-        return this.$http.get('http://rest.goltsman.net/annotate/groups?uri=' + this.$location.absUrl()).then(function (data) {
-          return data.groups;
+      key: 'registerListeners',
+      value: function registerListeners() {
+        this.MessagingService.registerListener(function (eventData) {
+          //if (eventData.event === Events.GROUP_LIST_UPDATED) {
+          console.log(eventData);
+          //}
         });
       }
     }]);
@@ -25,7 +33,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     return GroupsService;
   })();
 
-  GroupsService.$inject = ['$http', '$location'];
+  GroupsService.$inject = ['$http', '$location', 'MessagingService'];
 
   angular.module('annotate').service('GroupsService', GroupsService);
 })(angular);

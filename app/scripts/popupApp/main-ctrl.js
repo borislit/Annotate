@@ -3,13 +3,15 @@
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 (function () {
-  var MainCtrl = function MainCtrl(MessagingService) {
-    _classCallCheck(this, MainCtrl);
+  var MainCtrl = function MainCtrl(GroupsService) {
+    //GroupsService.getGroupsList().then((groups) => {
+    //  this.groups = groups;
+    //});
 
-    MessagingService.sendMessage();
+    _classCallCheck(this, MainCtrl);
   };
 
-  MainCtrl.$inject = ['MessagingService'];
+  MainCtrl.$inject = ['GroupsService'];
 
   angular.module('annotate').controller('MainCtrl', MainCtrl);
 })();

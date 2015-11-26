@@ -12,11 +12,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
     _createClass(MessagingService, [{
       key: 'sendMessage',
-      value: function sendMessage() {
-        console.log('message sent');
-        chrome.runtime.sendMessage({ greeting: 'hello' }, function (response) {
-          console.log(response, 'Got Back');
-        });
+      value: function sendMessage(data) {
+        chrome.runtime.sendMessage(data);
+      }
+    }, {
+      key: 'registerListener',
+      value: function registerListener(listener) {
+        chrome.runtime.onMessage.addListener(listener);
       }
     }]);
 
