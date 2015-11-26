@@ -29,13 +29,15 @@ var ContentController =  {
   fetch : function() {
     setTimeout(ContentController._onSyncCallback, 500);
     chrome.runtime.sendMessage({apiManger: "search"}, function(response) {
-      console.log(response.farewell);
     });
   },
 
   // send updated data
   update : function(model) {
     console.info("an annotation has just been updated!", model);
+
+    chrome.runtime.sendMessage({apiManger: "addAnnotation",model}, function(response) {
+    });
   },
 
   // send new model
@@ -48,6 +50,9 @@ var ContentController =  {
 
     ContentController._onSyncCallback();
     console.info("an annotation has just been created!", model);
+
+    chrome.runtime.sendMessage({apiManger: "addAnnotation",model}, function(response) {
+    });
   },
 
   // send deleted model
@@ -56,6 +61,9 @@ var ContentController =  {
 
     ContentController._onSyncCallback();
     console.info("an annotation has just been deleted!", model);
+
+    chrome.runtime.sendMessage(model, function(response) {
+    });
   }
 };
 

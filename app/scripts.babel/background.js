@@ -36,10 +36,10 @@ class MessagingService {
         ApiManager.getGroupsList();
         break;
       case "addAnnotation":
-        ApiManager.getByGroupsList();
+        ApiManager.getByGroupsList(obj);
         break;
-      case "vote":
-        ApiManager.vote();
+      case "update":
+        ApiManager.update(obj);
         break;
     }
   }
@@ -92,21 +92,21 @@ class ApiManager {
     });
   }
 
-  static addAnnotation() {
+  static addAnnotation(obj) {
     TabManager.executeForActiveTab(tabs => {
       console.log(tabs);
       const currentURL = tabs[0].url;
-      return jQuery.post(`${BASE_URL}/add`).then((data) => {
+      return jQuery.post(`${BASE_URL}/add`,obj).then((data) => {
         console.log(data);
       });
     });
   }
 
-  static vote() {
+  static update(obj) {
     TabManager.executeForActiveTab(tabs => {
       console.log(tabs);
       const currentURL = tabs[0].url;
-      return jQuery.post(`${BASE_URL}/vote?uri=?uri=#{currentURL}`).then((data) => {
+      return jQuery.post(`${BASE_URL}/vote?uri=?uri=#{currentURL}`,obj).then((data) => {
         console.log(data);
       });
     });
