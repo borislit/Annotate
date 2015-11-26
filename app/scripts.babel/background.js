@@ -26,7 +26,6 @@ class MessagingService {
       }
     });
   }
-
 }
 
 MessagingService.registerListeners();
