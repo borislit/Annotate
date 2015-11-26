@@ -1,18 +1,24 @@
 (function () {
   class GroupsService {
-    constructor($http, $location) {
+    constructor($http, $location, MessagingService, Events) {
       this.$http = $http;
       this.$location = $location;
+      this.MessagingService = MessagingService;
+      this.Events = Events;
+
+      this.registerListeners();
     }
 
-    getGroupsList() {
-      return this.$http.get('http://rest.goltsman.net/annotate/groups?uri=' + this.$location.absUrl()).then((data) => {
-        return data.groups;
+    registerListeners() {
+      this.MessagingService.registerListener(eventData => {
+        //if (eventData.event === Events.GROUP_LIST_UPDATED) {
+        console.log(eventData);
+        //}
       });
     }
   }
 
-  GroupsService.$inject = ['$http', '$location'];
+  GroupsService.$inject = ['$http', '$location', 'MessagingService'];
 
   angular.module('annotate').service('GroupsService', GroupsService);
 })(angular);

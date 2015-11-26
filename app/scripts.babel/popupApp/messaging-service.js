@@ -1,12 +1,14 @@
 (function () {
 
   class MessagingService {
-    sendMessage() {
-      console.log('message sent');
-      chrome.runtime.sendMessage({greeting: 'hello'}, function (response) {
-        console.log(response, 'Got Back');
-      });
+    sendMessage(data) {
+      chrome.runtime.sendMessage(data);
     }
+
+    registerListener(listener) {
+      chrome.runtime.onMessage.addListener(listener);
+    }
+
   }
 
   angular.module('annotate').service('MessagingService', MessagingService);

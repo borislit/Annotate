@@ -1,6 +1,19 @@
 'use strict';
 
+function showPageAction(tabId, changeInfo, tab) {
+  chrome.pageAction.show(tabId);
+}
+
+chrome.tabs.onUpdated.addListener(showPageAction);
+
 const BASE_URL = 'http://rest.goltsman.net/annotate';
+
+class Event {
+  constructor(event, data) {
+    this.event = event;
+    this.data = data;
+  }
+}
 
 class TabManager {
   static executeForActiveTab(fn) {
@@ -44,9 +57,10 @@ class ApiManager {
 
   static getGroupsList() {
     TabManager.executeForActiveTab(tabs => {
-      const currentURL = tabs[0].url;
-      return jQuery.get(`${BASE_URL}/groups?uri=?uri=${currentURL}`).then((data) => {
-        MessagingService.sendRuntimeMessage(data.groups);
+      const currentURL = 'https://en.wikipedia.org/wiki/Infection'; //tabs[0].url;
+      return jQuery.get(`${BASE_URL}/groups?uri=${currentURL}`).then((data) => {
+        const event = new Event(Events.GROUP_LIST_UPDATED, JSON.parse(data).groups);
+        MessagingService.sendRuntimeMessage(event);
       });
     });
   }
