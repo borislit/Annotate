@@ -8,7 +8,7 @@
 
       this.registerListeners();
 
-      MessagingService.sendMessage(Events.GROUPS_GET_LIST);
+      MessagingService.sendMessage(this.Events.GROUPS_GET_LIST);
     }
 
     registerListeners() {
@@ -20,7 +20,7 @@
     }
   }
 
-  GroupsService.$inject = ['$http', '$location', 'MessagingService'];
+  GroupsService.$inject = ['$http', '$location', 'MessagingService', 'Events'];
 
   angular.module('annotate').service('GroupsService', GroupsService);
 })(angular);
