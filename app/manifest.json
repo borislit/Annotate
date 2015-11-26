@@ -27,12 +27,14 @@
         "https://*/*"
       ],
       "js": [
+        "bower_components/angular/angular.min.js",
         "bower_components/jquery/dist/jquery.min.js",
         "scripts/annotator/annotator.min.js",
         "scripts/annotator/annotator.store.min.js",
+        "scripts/categories.js",
         "scripts/contentscript.js"
       ],
-      "css": ["scripts/annotator/annotator.min.css"],
+      "css": ["styles/main.css","scripts/annotator/annotator.min.css","styles/categories.css","styles/popup.css", "bower_components/angular/angular-csp.css"],
       "run_at": "document_end",
       "all_frames": false
     }

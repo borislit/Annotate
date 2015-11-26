@@ -20,6 +20,9 @@
   "globals" : {
     "chrome": true,
     "crypto": true,
-    "jQuery": true
+    "jQuery": true,
+    "angular": true,
+    "chrome": true,
+    "alert": true
   }
 }

@@ -3,7 +3,7 @@
 console.log('\'Allo \'Allo! Content script');
 
 jQuery(function ($) {
-  console.log('Done 3');
+  console.log('Done 4');
   $('.mw-body-content').annotator().annotator('addPlugin', 'Store', {
     // The endpoint of the store on your server.
     prefix: '/store/endpoint',
@@ -20,6 +20,15 @@ jQuery(function ($) {
       'limit': 20,
       'uri': 'http://this/document/only'
     }
+  }).annotator('addPlugin', 'Categories', {
+    categories: ['Yossi'],
+    categoryColorClasses: { 'Yossi': 'gg' },
+    categoryClass: 'annotator-category',
+    classForSelectedCategory: 'annotator-category-selected',
+    emptyCategory: 'Highlight',
+    annotatorHighlight: 'span.annotator-hl'
   });
+
+  $('body').append('<div class="annotate-controls">Text Text</div>');
 });
 //# sourceMappingURL=contentscript.js.map
