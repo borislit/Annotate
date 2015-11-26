@@ -13,25 +13,25 @@ var ContentController =  {
     });
 
     chrome.runtime.onMessage.addListener(proxy);
-    chrome.runtime.sendMessage({apiManger: "search"});
+    chrome.runtime.sendMessage(new Event(Events.SEARCH));
   },
 
   // send updated data
   update : function(model) {
     console.info("an annotation has just been updated!", model);
-    chrome.runtime.sendMessage({apiManger: "addAnnotation",model});
+    chrome.runtime.sendMessage(new Event(Events.ADD,model));
   },
 
   // send new model
   create : function(model) {
     console.info("an annotation has just been created!", model);
-    chrome.runtime.sendMessage({apiManger: "addAnnotation",model});
+    chrome.runtime.sendMessage(new Event(Events.ADD,model));
   },
 
   // send deleted model
   destroy : function(model) {
     console.info("an annotation has just been deleted!", model);
-    chrome.runtime.sendMessage(model);
+    // TODO: add destory
   }
 };
 
