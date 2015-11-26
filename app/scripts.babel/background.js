@@ -14,29 +14,7 @@ class TabManager {
   }
 }
 
-class EventsRouter {
-  static initRouting() {
-    chrome.runtime.onMessage.addListener(EventsRouter.handleIncomingMessage);
-  }
-
-  static handleIncomingMessage(event) {
-    let eventType = event && event.event;
-    switch (eventType) {
-      case Events.SEARCH:
-        ApiManager.getByGroupsList();
-        break;
-      case Events.GROUPS:
-        ApiManager.getGroupsList();
-        break;
-      case Events.ADD:
-        ApiManager.getByGroupsList(event.data);
-        break;
-      case Events.UPDATE:
-        ApiManager.update(event.data);
-        break;
-    }
-  }
-
+class MessagingService {
   static sendRuntimeMessage(data) {
     chrome.runtime.sendMessage(data, () => {
       console.log('Response received for runtime');
@@ -57,7 +35,6 @@ class EventsRouter {
 }
 
 class ApiManager {
-
   static getGroupsList() {
     TabManager.executeForActiveTab(tabs => {
       const currentURL = tabs[0].url;
@@ -89,7 +66,7 @@ class ApiManager {
     TabManager.executeForActiveTab(tabs => {
       console.log(tabs);
       const currentURL = tabs[0].url;
-      return jQuery.post(`${BASE_URL}/add`,obj).then((data) => {
+      return jQuery.post(`${BASE_URL}/add`, obj).then((data) => {
         console.log(data);
       });
     });
@@ -99,10 +76,34 @@ class ApiManager {
     TabManager.executeForActiveTab(tabs => {
       console.log(tabs);
       const currentURL = tabs[0].url;
-      return jQuery.post(`${BASE_URL}/vote?uri=${currentURL}`,obj).then((data) => {
+      return jQuery.post(`${BASE_URL}/vote?uri=${currentURL}`, obj).then((data) => {
         console.log(data);
       });
     });
+  }
+}
+
+class EventsRouter {
+  static initRouting() {
+    chrome.runtime.onMessage.addListener(EventsRouter.handleIncomingMessage);
+  }
+
+  static handleIncomingMessage(event) {
+    let eventType = event && event.event;
+    switch (eventType) {
+      case Events.SEARCH:
+        ApiManager.getByGroupsList();
+        break;
+      case Events.GROUPS:
+        ApiManager.getGroupsList();
+        break;
+      case Events.ADD:
+        ApiManager.getByGroupsList(event.data);
+        break;
+      case Events.UPDATE:
+        ApiManager.update(event.data);
+        break;
+    }
   }
 }
 
