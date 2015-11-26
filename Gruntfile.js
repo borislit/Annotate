@@ -37,7 +37,7 @@ module.exports = function (grunt) {
       },
       js: {
         files: ['<%= config.srcScript %>/{,*/}*.js'],
-        tasks: ['jshint', 'babel'],
+        tasks: ['babel'],
         options: {
           livereload: '<%= connect.options.livereload %>'
         }
@@ -317,7 +317,6 @@ module.exports = function (grunt) {
 
   grunt.registerTask('debug', function () {
     grunt.task.run([
-      'jshint',
       'babel',
       'concurrent:chrome',
       'connect:chrome',
@@ -345,7 +344,6 @@ module.exports = function (grunt) {
   ]);
 
   grunt.registerTask('default', [
-    'jshint',
     'test',
     'build'
   ]);

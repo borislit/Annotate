@@ -1,6 +1,6 @@
 {
   "name": "__MSG_appName__",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "manifest_version": 2,
   "description": "__MSG_appDescription__",
   "icons": {
@@ -12,7 +12,8 @@
     "scripts": [
       "scripts/chromereload.js",
       "scripts/background.js"
-    ]
+    ],
+    "persistent": true
   },
   "permissions": [
     "tabs",
@@ -32,7 +33,9 @@
         "scripts/annotator/annotator.store.min.js",
         "scripts/contentscript.js"
       ],
-      "css": ["scripts/annotator/annotator.min.css"],
+      "css": [
+        "scripts/annotator/annotator.min.css"
+      ],
       "run_at": "document_end",
       "all_frames": false
     }
