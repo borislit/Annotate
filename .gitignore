@@ -8,5 +8,9 @@ test/bower_components
 package
 scripts/*.js
 scripts/*.map
-.xml
+.idea
+
+app/scripts/*.js
+app/scripts/*.js.map
+
 

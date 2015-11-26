@@ -13,22 +13,8 @@ class MessagingService {
     chrome.runtime.onMessage.addListener(MessagingService.handleIncomingMessage);
   }
 
-  static handleIncomingMessage(obj) {
-    let apiTask = obj && obj.apiManger;
-    switch (apiTask){
-      case "search":
-        ApiManager.getGroupsList();
-        break;
-      case "groups":
-        ApiManager.getByGroupsList();
-        break;
-      case "addAnnotation":
-        ApiManager.getByGroupsList();
-        break;
-      case "vote":
-        ApiManager.vote();
-        break;
-    }
+  static handleIncomingMessage() {
+    console.log('Got message');
   }
 
   static sendRuntimeMessage(data) {
@@ -57,9 +43,11 @@ class ApiManager {
   }
 
   static getGroupsList() {
+  static getGroupsList() {
     TabManager.executeForActiveTab(tabs => {
       const currentURL = tabs[0].url;
-      return jQuery.get(`${BASE_URL}/groups?uri=?uri=#{currentURL}`).then((data) => {
+      return jQuery.get(`${BASE_URL}/groups?uri=?uri=${currentURL}`).then((data) => {
+        MessagingService.sendRuntimeMessage(data.groups);
       });
     });
   }
