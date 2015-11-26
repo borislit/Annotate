@@ -10,16 +10,20 @@ class MessagingService {
   }
 
   static sendRuntimeMessage(data) {
-    chrome.runtime.sendMessage(data, (response) => {
-      console.log(response);
+    chrome.runtime.sendMessage(data, () => {
+      console.log('Response received for runtime');
     });
   }
 
   static sendTabMessage(data) {
-    chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
-      chrome.tabs.sendMessage(tabs[0].id, data, (response) => {
-        console.log(response);
-      });
+    chrome.tabs.onUpdated.addListener(function (tabId, changeInfo) {
+      if (changeInfo.status === 'complete') {
+        chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
+          chrome.tabs.sendMessage(tabs[0].id, data, function (response) {
+            console.log(response, 'Tab message response received');
+          });
+        });
+      }
     });
   }
 
@@ -27,5 +31,7 @@ class MessagingService {
 
 MessagingService.registerListeners();
 
-console.log('\'Allo \'Allo! Event Page for Page Action Yo');
+MessagingService.sendTabMessage('Hey yo');
+MessagingService.sendTabMessage('Hey yo 123');
 
+console.log('\'Allo \'Allo! Event Page for Page Action Yo');

@@ -12,8 +12,7 @@
     "scripts": [
       "scripts/chromereload.js",
       "scripts/background.js"
-    ],
-    "persistent": true
+    ]
   },
   "permissions": [
     "tabs",
@@ -32,7 +31,6 @@
         "bower_components/jquery/dist/jquery.min.js",
         "scripts/annotator/annotator.min.js",
         "scripts/annotator/annotator.store.min.js",
-        "scripts/categories.js",
         "scripts/contentscript.js"
       ],
       "css": [
