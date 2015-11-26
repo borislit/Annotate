@@ -9,12 +9,8 @@ class TabManager {
 }
 
 class MessagingService {
-  static registerListeners() {
-    chrome.runtime.onMessage.addListener(MessagingService.handleIncomingMessage);
-  }
-
-  static handleIncomingMessage() {
-    console.log('Got message');
+  static registerListeners(listener) {
+    chrome.runtime.onMessage.addListener(listener);
   }
 
   static sendRuntimeMessage(data) {
@@ -37,22 +33,17 @@ class MessagingService {
 }
 
 class ApiManager {
-  static EVENT_GROUPS_LIST = 'groups'
 
-  constructor() {
-
-  }
-
-  getGroupsList() {
+  static getGroupsList() {
     TabManager.executeForActiveTab(tabs => {
       const currentURL = tabs[0].url;
-      return jQuery.get(`${BASE_URL}/groups?uri=?uri=#{currentURL}`).then((data) => {
+      return jQuery.get(`${BASE_URL}/groups?uri=?uri=${currentURL}`).then((data) => {
+        MessagingService.sendRuntimeMessage(data.groups);
       });
     });
   }
 }
 
-MessagingService.registerListeners();
-
+ApiManager.getGroupsList();
 
 console.log('\'Allo \'Allo! Event Page for Page Action Yo');
