@@ -1,17 +1,31 @@
 'use strict';
 
-chrome.runtime.onInstalled.addListener(details => {
-  console.log('previousVersion', details.previousVersion);
-});
+class MessagingService {
+  static registerListeners() {
+    chrome.runtime.onMessage.addListener(MessagingService.handleIncomingMessage);
+  }
 
-chrome.runtime.onMessage.addListener(
-  function () {
+  static handleIncomingMessage() {
     console.log('Got message');
-  });
+  }
 
-chrome.tabs.onUpdated.addListener(tabId => {
-  chrome.pageAction.show(tabId);
-});
+  static sendRuntimeMessage(data) {
+    chrome.runtime.sendMessage(data, (response) => {
+      console.log(response);
+    });
+  }
+
+  static sendTabMessage(data) {
+    chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
+      chrome.tabs.sendMessage(tabs[0].id, data, (response) => {
+        console.log(response);
+      });
+    });
+  }
+
+}
+
+MessagingService.registerListeners();
 
 console.log('\'Allo \'Allo! Event Page for Page Action Yo');
 

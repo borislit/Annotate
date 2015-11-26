@@ -12,7 +12,8 @@
     "scripts": [
       "scripts/chromereload.js",
       "scripts/background.js"
-    ]
+    ],
+    "persistent": true
   },
   "permissions": [
     "tabs",
@@ -34,7 +35,13 @@
         "scripts/categories.js",
         "scripts/contentscript.js"
       ],
-      "css": ["styles/main.css","scripts/annotator/annotator.min.css","styles/categories.css","styles/popup.css", "bower_components/angular/angular-csp.css"],
+      "css": [
+        "styles/main.css",
+        "scripts/annotator/annotator.min.css",
+        "styles/categories.css",
+        "styles/popup.css",
+        "bower_components/angular/angular-csp.css"
+      ],
       "run_at": "document_end",
       "all_frames": false
     }
