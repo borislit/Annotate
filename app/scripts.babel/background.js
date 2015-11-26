@@ -8,13 +8,6 @@ chrome.tabs.onUpdated.addListener(showPageAction);
 
 const BASE_URL = 'http://rest.goltsman.net/annotate';
 
-class Event {
-  constructor(event, data) {
-    this.event = event;
-    this.data = data;
-  }
-}
-
 class TabManager {
   static executeForActiveTab(fn) {
     chrome.tabs.query({active: true, currentWindow: true}, fn);
@@ -22,27 +15,27 @@ class TabManager {
 }
 
 class MessagingService {
-  static registerListeners() {
-    chrome.runtime.onMessage.addListener(MessagingService.handleIncomingMessage);
+    static registerListeners(listener) {
+    chrome.runtime.onMessage.addListener(listener);
   }
 
-  static handleIncomingMessage(obj) {
-    let apiTask = obj && obj.apiManger;
-    switch (apiTask) {
-      case "search":
-        ApiManager.getByGroupsList();
-        break;
-      case "groups":
-        ApiManager.getGroupsList();
-        break;
-      case "addAnnotation":
-        ApiManager.getByGroupsList(obj);
-        break;
-      case "update":
-        ApiManager.update(obj);
-        break;
-    }
-  }
+  //static handleIncomingMessage(obj) {
+  //  let apiTask = obj && obj.apiManger;
+  //  switch (apiTask) {
+  //    case "search":
+  //      ApiManager.getByGroupsList();
+  //      break;
+  //    case "groups":
+  //      ApiManager.getGroupsList();
+  //      break;
+  //    case "addAnnotation":
+  //      ApiManager.getByGroupsList(obj);
+  //      break;
+  //    case "update":
+  //      ApiManager.update(obj);
+  //      break;
+  //  }
+  //}
 
   static sendRuntimeMessage(data) {
     chrome.runtime.sendMessage(data, () => {
@@ -96,7 +89,7 @@ class ApiManager {
     TabManager.executeForActiveTab(tabs => {
       console.log(tabs);
       const currentURL = tabs[0].url;
-      return jQuery.post(`${BASE_URL}/add`,obj).then((data) => {
+      return jQuery.post(`${BASE_URL}/add`, obj).then((data) => {
         console.log(data);
       });
     });
@@ -106,7 +99,7 @@ class ApiManager {
     TabManager.executeForActiveTab(tabs => {
       console.log(tabs);
       const currentURL = tabs[0].url;
-      return jQuery.post(`${BASE_URL}/vote?uri=?uri=#{currentURL}`,obj).then((data) => {
+      return jQuery.post(`${BASE_URL}/vote?uri=?uri=#{currentURL}`, obj).then((data) => {
         console.log(data);
       });
     });
@@ -114,9 +107,9 @@ class ApiManager {
 }
 
 class EventsRouter {
-  static initRouting(){
+  static initRouting() {
     MessagingService.registerListeners((event) => {
-      if(event === Events.GROUPS_GET_LIST) {
+      if (event === Events.GROUPS_GET_LIST) {
         ApiManager.getGroupsList();
       }
     })
