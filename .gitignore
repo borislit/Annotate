@@ -9,3 +9,7 @@ package
 scripts/*.js
 scripts/*.map
 
+app/scripts/*.js
+app/scripts/*.js.map
+
+
