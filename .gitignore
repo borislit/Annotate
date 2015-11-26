@@ -9,6 +9,10 @@ package
 scripts/*.js
 scripts/*.map
 
+.idea
+app/scripts/*.map
+app/scripts/*.js
+
 idea
 .map
 .xml
