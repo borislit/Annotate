@@ -4,7 +4,40 @@ console.log('\'Allo \'Allo! Content script');
 
 jQuery(function ($) {
   console.log('Done 3');
-  $('.mw-body-content').annotator().annotator('addPlugin', 'Store', {
+
+  chrome.runtime.onMessage.addListener(
+    function(request, sender, sendResponse) {
+      console.log(sender.tab ?
+      "from a content script:" + sender.tab.url :
+        "from the extension");
+      if (request.greeting == "hello")
+        sendResponse({farewell: "goodbye"});
+    });
+
+  Annotator.Plugin.Message = function (element, message) {
+    console.log('Done 123');
+    //debugger;
+    var plugin = {};
+
+    plugin.pluginInit = function () {
+      this.annotator.viewer.addField({
+        load: function (field) {
+          field.innerHTML = message;
+        }
+      });
+    };
+
+    return plugin;
+  };
+
+
+  Annotator.Plugin.Store.prototype.loadAnnotationsFromSearch = function() {
+    let myResponse = {};
+    myResponse.rows = [{"ranges":[{"start":"/div[4]/table[1]/tbody[1]/tr[1]/td[2]/div[1]/table[2]/tbody[1]/tr[1]/td[1]/div[1]/p[1]","startOffset":211,"end":"/div[4]/table[1]/tbody[1]/tr[1]/td[2]/div[1]/table[2]/tbody[1]/tr[1]/td[1]/div[1]/p[1]","endOffset":227}],"quote":"ורות בכך שמתי ול","highlights":[{}],"text":"ofirbla"}];
+     this._onLoadAnnotationsFromSearch(myResponse);
+  };
+
+  $('.mw-body-content').annotator().annotator('addPlugin','Message', 'Store', {
     // The endpoint of the store on your server.
     prefix: '/store/endpoint',
 
