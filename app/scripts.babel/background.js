@@ -13,8 +13,22 @@ class MessagingService {
     chrome.runtime.onMessage.addListener(MessagingService.handleIncomingMessage);
   }
 
-  static handleIncomingMessage() {
-    console.log('Got message');
+  static handleIncomingMessage(obj) {
+    let apiTask = obj && obj.apiManger;
+    switch (apiTask){
+      case "search":
+        ApiManager.getGroupsList();
+        break;
+      case "groups":
+        ApiManager.getByGroupsList();
+        break;
+      case "addAnnotation":
+        ApiManager.getByGroupsList();
+        break;
+      case "vote":
+        ApiManager.vote();
+        break;
+    }
   }
 
   static sendRuntimeMessage(data) {
@@ -37,22 +51,50 @@ class MessagingService {
 }
 
 class ApiManager {
-  static EVENT_GROUPS_LIST = 'groups'
 
   constructor() {
 
   }
 
-  getGroupsList() {
+  static getGroupsList() {
     TabManager.executeForActiveTab(tabs => {
       const currentURL = tabs[0].url;
       return jQuery.get(`${BASE_URL}/groups?uri=?uri=#{currentURL}`).then((data) => {
       });
     });
   }
+
+  static getByGroupsList() {
+    TabManager.executeForActiveTab(tabs => {
+      console.log(tabs);
+      const currentURL = "https://en.wikipedia.org/wiki/Infection";//tabs[0].url;
+      return jQuery.get(`${BASE_URL}/group/bgu?uri=?uri=#{currentURL}`).then((data) => {
+        console.log(data);
+      });
+    });
+  }
+
+  static addAnnotation() {
+    TabManager.executeForActiveTab(tabs => {
+      console.log(tabs);
+      const currentURL = tabs[0].url;
+      return jQuery.post(`${BASE_URL}/add`).then((data) => {
+        console.log(data);
+      });
+    });
+  }
+
+  static vote() {
+    TabManager.executeForActiveTab(tabs => {
+      console.log(tabs);
+      const currentURL = tabs[0].url;
+      return jQuery.post(`${BASE_URL}/vote?uri=?uri=#{currentURL}`).then((data) => {
+        console.log(data);
+      });
+    });
+  }
 }
 
 MessagingService.registerListeners();
-
 
 console.log('\'Allo \'Allo! Event Page for Page Action Yo');
