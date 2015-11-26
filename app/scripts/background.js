@@ -4,6 +4,23 @@ var _createClass = (function () { function defineProperties(target, props) { for
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+var BASE_URL = 'http://rest.goltsman.net/annotate';
+
+var TabManager = (function () {
+  function TabManager() {
+    _classCallCheck(this, TabManager);
+  }
+
+  _createClass(TabManager, null, [{
+    key: 'executeForActiveTab',
+    value: function executeForActiveTab(fn) {
+      chrome.tabs.query({ active: true, currentWindow: true }, fn);
+    }
+  }]);
+
+  return TabManager;
+})();
+
 var MessagingService = (function () {
   function MessagingService() {
     _classCallCheck(this, MessagingService);
@@ -31,7 +48,7 @@ var MessagingService = (function () {
     value: function sendTabMessage(data) {
       chrome.tabs.onUpdated.addListener(function (tabId, changeInfo) {
         if (changeInfo.status === 'complete') {
-          chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+          TabManager.executeForActiveTab(function (tabs) {
             chrome.tabs.sendMessage(tabs[0].id, data, function (response) {
               console.log(response, 'Tab message response received');
             });
@@ -44,10 +61,60 @@ var MessagingService = (function () {
   return MessagingService;
 })();
 
-MessagingService.registerListeners();
+var ApiManager = (function () {
+  function ApiManager() {
+    _classCallCheck(this, ApiManager);
+  }
 
-MessagingService.sendTabMessage('Hey yo');
-MessagingService.sendTabMessage('Hey yo 123');
+  _createClass(ApiManager, null, [{
+    key: 'getGroupsList',
+    value: function getGroupsList() {
+      TabManager.executeForActiveTab(function (tabs) {
+        var currentURL = tabs[0].url;
+        return jQuery.get(BASE_URL + '/groups?uri=?uri=' + currentURL).then(function (data) {
+          MessagingService.sendRuntimeMessage(data.groups);
+        });
+      });
+    }
+  }, {
+    key: 'getByGroupsList',
+    value: function getByGroupsList() {
+      TabManager.executeForActiveTab(function (tabs) {
+        console.log(tabs);
+        var currentURL = "https://en.wikipedia.org/wiki/Infection"; //tabs[0].url;
+        return jQuery.get(BASE_URL + '/group/bgu?uri=?uri=#{currentURL}').then(function (data) {
+          console.log(data);
+        });
+      });
+    }
+  }, {
+    key: 'addAnnotation',
+    value: function addAnnotation() {
+      TabManager.executeForActiveTab(function (tabs) {
+        console.log(tabs);
+        var currentURL = tabs[0].url;
+        return jQuery.post(BASE_URL + '/add').then(function (data) {
+          console.log(data);
+        });
+      });
+    }
+  }, {
+    key: 'vote',
+    value: function vote() {
+      TabManager.executeForActiveTab(function (tabs) {
+        console.log(tabs);
+        var currentURL = tabs[0].url;
+        return jQuery.post(BASE_URL + '/vote?uri=?uri=#{currentURL}').then(function (data) {
+          console.log(data);
+        });
+      });
+    }
+  }]);
+
+  return ApiManager;
+})();
+
+MessagingService.registerListeners();
 
 console.log('\'Allo \'Allo! Event Page for Page Action Yo');
 //# sourceMappingURL=background.js.map

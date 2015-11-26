@@ -43,7 +43,6 @@ class ApiManager {
   }
 
   static getGroupsList() {
-  static getGroupsList() {
     TabManager.executeForActiveTab(tabs => {
       const currentURL = tabs[0].url;
       return jQuery.get(`${BASE_URL}/groups?uri=?uri=${currentURL}`).then((data) => {

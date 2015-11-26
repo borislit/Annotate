@@ -31,6 +31,9 @@ var ContentController =  {
   // request sync
   fetch : function() {
     setTimeout(ContentController._onSyncCallback, 500);
+    chrome.runtime.sendMessage({apiManger: "search"}, function(response) {
+      console.log(response.farewell);
+    });
   },
 
   // send updated data
@@ -81,8 +84,30 @@ Annotator.Plugin.Content = function() {
 jQuery(function ($) {
   $('.mw-body-content').annotator();
 
-  chrome.runtime.onMessage.addListener((data) => {
-    console.log('Got Message', data);
   });
 
+Annotator.Plugin.Content = function() {
+  console.log("constructor");
+
+  return {
+    pluginInit : function() {
+      console.log('content plugin loaded');
+
+      this.annotator.subscribe("annotationCreated", ContentController.create);
+      this.annotator.subscribe("annotationUpdated", ContentController.update);
+      this.annotator.subscribe("annotationDeleted", ContentController.destroy);
+
+      ContentController.onSync(this.annotator.loadAnnotations.bind(this.annotator));
+      ContentController.fetch();
+
+      return this;
+    }
+  };
+};
+
+jQuery(function ($) {
+  console.log('Up & Running...');
+
+  $('.mw-body-content').annotator().annotator('addPlugin', "Content");
+  $("body");
 });
