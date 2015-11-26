@@ -96,7 +96,7 @@ class ApiManager {
     TabManager.executeForActiveTab(tabs => {
       console.log(tabs);
       const currentURL = tabs[0].url;
-      return jQuery.post(`${BASE_URL}/add`).then((data) => {
+      return jQuery.post(`${BASE_URL}/add`,obj).then((data) => {
         console.log(data);
       });
     });
@@ -106,7 +106,7 @@ class ApiManager {
     TabManager.executeForActiveTab(tabs => {
       console.log(tabs);
       const currentURL = tabs[0].url;
-      return jQuery.post(`${BASE_URL}/vote?uri=?uri=#{currentURL}`).then((data) => {
+      return jQuery.post(`${BASE_URL}/vote?uri=?uri=#{currentURL}`,obj).then((data) => {
         console.log(data);
       });
     });
