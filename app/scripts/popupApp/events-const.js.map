@@ -1,0 +1,1 @@
+{"version":3,"sources":["../../scripts.babel/popupApp/events-const.js"],"names":[],"mappings":";;AAAA,CAAC,UAAU,OAAO,EAAE;AAClB,SAAO,CAAC,MAAM,CAAC,UAAU,CAAC,CAAC,QAAQ,CAAC,QAAQ,EAAE,MAAM,CAAC,CAAC;CACvD,CAAA,CAAE,OAAO,CAAC,CAAC","file":"events-const.js","sourcesContent":["(function (angular) {\n  angular.module('annotate').constant('Events', Events);\n})(angular);\n"]}
