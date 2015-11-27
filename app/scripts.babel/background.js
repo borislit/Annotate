@@ -35,6 +35,7 @@ class ApiManager {
     TabManager.executeForActiveTab(tabs => {
       const currentURL = tabs[0].url;
       return jQuery.get(`${BASE_URL}/groups?uri=${currentURL}`).then((data) => {
+        console.log("groups: ", JSON.parse(data).groups);
         MessagingService.sendRuntimeMessage(new Event(Events.GROUP_LIST_UPDATED, JSON.parse(data).groups));
       });
     });
@@ -72,6 +73,45 @@ class ApiManager {
       });
     });
   }
+}
+
+class LocalManager {
+
+  constructor() {
+    this._defaultGroup = "sce";
+    this._secletedGroup = "sce";
+
+    this._data = {
+      "sce" : [],
+      "demo" : []
+    };
+
+    _.bindAll(this, ["getByGroupsList", "getGroupsList", "addAnnotation", "addAnnotation"]);
+  }
+
+  getByGroupsList(group) {
+    if (!group)
+      group = this._defaultGroup;
+
+    this._secletedGroup = group;
+    MessagingService.sendRuntimeMessage(new Event(Events.GROUP_LIST_UPDATED, _.clone(this._data[group])));
+  }
+
+  getGroupsList() {
+    var groups = _.keys(this._data);
+    MessagingService.sendRuntimeMessage(new Event(Events.GROUP_LIST_UPDATED, groups));
+  }
+
+  addAnnotation(model) {
+    model.group = this._secletedGroup;
+    this._data[this._secletedGroup].push(model);
+  }
+
+  update(model) {
+
+  }
+
+
 }
 
 class EventsRouter {
