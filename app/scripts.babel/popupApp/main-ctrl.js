@@ -1,18 +1,25 @@
 (function () {
   class MainCtrl {
     constructor(GroupsService, $timeout) {
+      this.isInAddMode = false;
       this.GroupsService = GroupsService;
       GroupsService.getGroupsList().then((groups)=> {
         this.groups = groups;
-      }).then(() => {
-        $timeout(()=> {
-          angular.element('.popup__group').first().click();
-        })
       });
     }
 
     onGroupSelected(group) {
       this.GroupsService.getGroupAnnotations(group);
+    }
+
+    switchToAddAddNew(){
+      this.isInAddMode = true;
+    }
+
+    addGroup(group) {
+      this.groups.push(group);
+      this.groupToAdd = '';
+      this.isInAddMode = false;
     }
   }
 

@@ -44,7 +44,7 @@ var ContentController = {
   // send new model
   create: function (model) {
     console.info("an annotation has just been created!", model);
-    model = _.defaults(ContentController.defualtModle(),model);
+    model = _.defaults(model, ContentController.defualtModle());
     chrome.runtime.sendMessage(new Event(Events.ADD, model));
   },
 
