@@ -1,9 +1,13 @@
 (function () {
   class MainCtrl {
-    constructor(GroupsService) {
+    constructor(GroupsService, $timeout) {
       this.GroupsService = GroupsService;
       GroupsService.getGroupsList().then((groups)=> {
         this.groups = groups;
+      }).then(() => {
+        $timeout(()=> {
+          angular.element('.popup__group').first().click();
+        })
       });
     }
 
@@ -12,7 +16,7 @@
     }
   }
 
-  MainCtrl.$inject = ['GroupsService'];
+  MainCtrl.$inject = ['GroupsService', '$timeout'];
 
   angular.module('annotate').controller('MainCtrl', MainCtrl);
 })();
