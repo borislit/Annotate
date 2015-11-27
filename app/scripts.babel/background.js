@@ -1,5 +1,8 @@
 'use strict';
 
+var cashed = {
+  selectedGroup:'sce'
+}
 function showPageAction(tabId, changeInfo, tab) {
   chrome.pageAction.show(tabId);
 }
@@ -42,9 +45,10 @@ class ApiManager {
   }
 
   static getByGroupsList(group) {
+    cashed.selectedGroup = group;
     console.log('Get By Group', group);
     TabManager.executeForActiveTab(tabs => {
-      const currentURL = 'https://en.wikipedia.org/wiki/Infection'; //tabs[0].url;
+      const currentURL = tabs[0].url;
       return jQuery.get(`${BASE_URL}/group/${group}?uri=${currentURL}`).then((data) => {
         data = JSON.parse(data);
         console.log(data.annotations);
@@ -57,6 +61,7 @@ class ApiManager {
     TabManager.executeForActiveTab(tabs => {
       console.log(tabs);
       const currentURL = tabs[0].url;
+      obj.group = cashed.selectedGroup;
       return jQuery.post(`${BASE_URL}/add`, JSON.stringify(obj)).then((data) => {
         console.log(data);
         console.log("annotation sent")
