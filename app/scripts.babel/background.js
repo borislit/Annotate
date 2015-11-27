@@ -66,8 +66,9 @@ class ApiManager {
     TabManager.executeForActiveTab(tabs => {
       console.log(tabs);
       const currentURL = tabs[0].url;
-      return jQuery.post(`${BASE_URL}/add`, obj).then((data) => {
+      return jQuery.post(`${BASE_URL}/add`, JSON.stringify(obj)).then((data) => {
         console.log(data);
+        console.log("annotation sent")
       });
     });
   }
@@ -98,7 +99,7 @@ class EventsRouter {
         ApiManager.getGroupsList();
         break;
       case Events.ADD:
-        ApiManager.getByGroupsList(event.data);
+        ApiManager.addAnnotation(event.data);
         break;
       case Events.UPDATE:
         ApiManager.update(event.data);
