@@ -85,7 +85,7 @@ class EventsRouter {
   start() {
     console.log('\'Allo \'Allo! Event Page for Page Action Yo');
 
-    chrome.runtime.onMessage.addListener(EventsRouter.handleIncomingMessage);
+    chrome.runtime.onMessage.addListener(this.handleIncomingMessage.bind(this));
     return this;
   }
 
