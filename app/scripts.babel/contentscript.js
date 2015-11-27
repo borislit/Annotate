@@ -75,3 +75,4 @@ jQuery(function ($) {
 
   $('.mw-body-content').annotator().annotator('addPlugin', "Content");
 });
+

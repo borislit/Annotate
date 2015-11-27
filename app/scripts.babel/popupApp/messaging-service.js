@@ -2,6 +2,7 @@
 
   class MessagingService {
     sendMessage(data) {
+      console.log('Send Message', data);
       chrome.runtime.sendMessage(data);
     }
 

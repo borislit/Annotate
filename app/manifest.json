@@ -35,7 +35,7 @@
         "bower_components/jquery/dist/jquery.min.js",
         "scripts/annotator/annotator.min.js",
         "scripts/annotator/annotator.store.min.js",
-        "scripts/events.js",
+        "scripts/common/events.js",
         "scripts/contentscript.js"
       ],
       "css": [
