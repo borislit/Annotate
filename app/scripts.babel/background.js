@@ -66,8 +66,9 @@ class ApiManager {
     TabManager.executeForActiveTab(tabs => {
       console.log(tabs);
       const currentURL = tabs[0].url;
-      return jQuery.post(`${BASE_URL}/add`, obj).then((data) => {
+      return jQuery.post(`${BASE_URL}/add`, JSON.stringify(obj)).then((data) => {
         console.log(data);
+        console.log("annotation sent")
       });
     });
   }
@@ -83,39 +84,30 @@ class ApiManager {
   }
 }
 
-
 class EventsRouter {
-
-  constructor(manager) {
-    this._manager = manager;
+  static initRouting() {
+    chrome.runtime.onMessage.addListener(EventsRouter.handleIncomingMessage);
   }
 
-  start() {
-    console.log('\'Allo \'Allo! Event Page for Page Action Yo');
-
-    chrome.runtime.onMessage.addListener(this.handleIncomingMessage);
-    return this;
-  }
-
-  handleIncomingMessage(event) {
+  static handleIncomingMessage(event) {
     let eventType = event && event.event;
-    let manager = this._manager;
-
     switch (eventType) {
       case Events.SEARCH:
-        manager.getByGroupsList();
+        ApiManager.getByGroupsList();
         break;
       case Events.GROUPS:
-        manager.getGroupsList();
+        ApiManager.getGroupsList();
         break;
       case Events.ADD:
-        manager.getByGroupsList(event.data);
+        ApiManager.addAnnotation(event.data);
         break;
       case Events.UPDATE:
-        manager.update(event.data);
+        ApiManager.update(event.data);
         break;
     }
   }
 }
 
-new EventsRouter(ApiManager).start();
+EventsRouter.initRouting();
+
+console.log('\'Allo \'Allo! Event Page for Page Action Yo');

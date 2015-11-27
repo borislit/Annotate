@@ -3,11 +3,29 @@
 console.log('\'Allo \'Allo! Content script is up');
 
 
-var ContentController =  {
-
+var ContentController = {
+  defualtModle: function () {
+    return {
+      "annotator_schema_version": "v1.0",
+      "created": new Date().toISOString(),
+      "updated": new Date().toISOString(),
+      "uri": window.location.href,
+      "user": "alice",
+      "ranges": [
+        {
+          "start": "",
+          "end": "",
+          "startOffset": 0,
+          "endOffset": 1
+        }
+      ],
+      "consumer": "annotateit",
+      "group": "sce"
+    };
+  },
   // request sync
-  fetch : function(callback) {
-    var proxy = _.once(function(data) {
+  fetch: function (callback) {
+    var proxy = _.once(function (data) {
       console.info("fetch() data-> ", data);
       callback(_.clone(data));
     });
@@ -17,27 +35,28 @@ var ContentController =  {
   },
 
   // send updated data
-  update : function(model) {
+  update: function (model) {
     console.info("an annotation has just been updated!", model);
-    chrome.runtime.sendMessage(new Event(Events.ADD,model));
+    chrome.runtime.sendMessage(new Event(Events.ADD, model));
   },
 
   // send new model
-  create : function(model) {
+  create: function (model) {
     console.info("an annotation has just been created!", model);
-    chrome.runtime.sendMessage(new Event(Events.ADD,model));
+    model = _.defaults(ContentController.defualtModle(),model)
+    chrome.runtime.sendMessage(new Event(Events.ADD, model));
   },
 
   // send deleted model
-  destroy : function(model) {
+  destroy: function (model) {
     console.info("an annotation has just been deleted!", model);
     // TODO: add destory
   }
 };
 
-Annotator.Plugin.Content = function() {
+Annotator.Plugin.Content = function () {
   return {
-    pluginInit : function() {
+    pluginInit: function () {
       console.log('content plugin loaded');
 
       this.annotator.subscribe("annotationCreated", ContentController.create);
