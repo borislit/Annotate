@@ -23,15 +23,14 @@ var ContentController = {
       "group": "sce"
     };
   },
-  // request sync
-  fetch: function (callback) {
-    var proxy = _.once(function (data) {
+  // on sync
+  onSync: function (callback) {
+    var proxy = function (data) {
       console.info("fetch() data-> ", data);
       callback(_.clone(data));
-    });
+    };
 
     chrome.runtime.onMessage.addListener(proxy);
-    chrome.runtime.sendMessage(new Event(Events.SEARCH));
   },
 
   // send updated data
@@ -43,7 +42,7 @@ var ContentController = {
   // send new model
   create: function (model) {
     console.info("an annotation has just been created!", model);
-    model = _.defaults(ContentController.defualtModle(),model)
+    model = _.defaults(ContentController.defualtModle(),model);
     chrome.runtime.sendMessage(new Event(Events.ADD, model));
   },
 
@@ -59,11 +58,17 @@ Annotator.Plugin.Content = function () {
     pluginInit: function () {
       console.log('content plugin loaded');
 
-      this.annotator.subscribe("annotationCreated", ContentController.create);
-      this.annotator.subscribe("annotationUpdated", ContentController.update);
-      this.annotator.subscribe("annotationDeleted", ContentController.destroy);
+      var annotator = this.annotator;
+      var onSync = function(data) {
+        //TODO: remove before loading new
+        annotator.loadAnnotations(data);
+      };
 
-      ContentController.fetch(this.annotator.loadAnnotations.bind(this.annotator));
+      annotator.subscribe("annotationCreated", ContentController.create);
+      annotator.subscribe("annotationUpdated", ContentController.update);
+      annotator.subscribe("annotationDeleted", ContentController.destroy);
+
+      ContentController.onSync(onSync);
 
       return this;
     }
