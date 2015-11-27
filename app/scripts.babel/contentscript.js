@@ -23,14 +23,16 @@ var ContentController = {
       "group": "sce"
     };
   },
-  // on sync
-  onSync: function (callback) {
+
+  // request sync
+  fetch: function (callback) {
     var proxy = function (data) {
       console.info("fetch() data-> ", data);
       callback(_.clone(data));
     };
 
     chrome.runtime.onMessage.addListener(proxy);
+    chrome.runtime.sendMessage(new Event(Events.SEARCH, "sce"));
   },
 
   // send updated data
@@ -68,7 +70,7 @@ Annotator.Plugin.Content = function () {
       annotator.subscribe("annotationUpdated", ContentController.update);
       annotator.subscribe("annotationDeleted", ContentController.destroy);
 
-      ContentController.onSync(onSync);
+      ContentController.fetch(onSync);
 
       return this;
     }
