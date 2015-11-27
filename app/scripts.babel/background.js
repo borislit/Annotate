@@ -83,30 +83,39 @@ class ApiManager {
   }
 }
 
+
 class EventsRouter {
-  static initRouting() {
-    chrome.runtime.onMessage.addListener(EventsRouter.handleIncomingMessage);
+
+  constructor(manager) {
+    this._manager = manager;
   }
 
-  static handleIncomingMessage(event) {
+  start() {
+    console.log('\'Allo \'Allo! Event Page for Page Action Yo');
+
+    chrome.runtime.onMessage.addListener(this.handleIncomingMessage);
+    return this;
+  }
+
+  handleIncomingMessage(event) {
     let eventType = event && event.event;
+    let manager = this._manager;
+
     switch (eventType) {
       case Events.SEARCH:
-        ApiManager.getByGroupsList();
+        manager.getByGroupsList();
         break;
       case Events.GROUPS:
-        ApiManager.getGroupsList();
+        manager.getGroupsList();
         break;
       case Events.ADD:
-        ApiManager.getByGroupsList(event.data);
+        manager.getByGroupsList(event.data);
         break;
       case Events.UPDATE:
-        ApiManager.update(event.data);
+        manager.update(event.data);
         break;
     }
   }
 }
 
-EventsRouter.initRouting();
-
-console.log('\'Allo \'Allo! Event Page for Page Action Yo');
+new EventsRouter(ApiManager).start();
