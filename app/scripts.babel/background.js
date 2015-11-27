@@ -10,7 +10,7 @@ const BASE_URL = 'http://rest.goltsman.net/annotate';
 
 class TabManager {
   static executeForActiveTab(fn) {
-    chrome.tabs.query({active: true, currentWindow: true}, fn);
+    chrome.tabs.query({active: true}, fn);
   }
 }
 
@@ -22,42 +22,32 @@ class MessagingService {
   }
 
   static sendTabMessage(data) {
-    chrome.tabs.onUpdated.addListener(function (tabId, changeInfo) {
-      if (changeInfo.status === 'complete') {
-        TabManager.executeForActiveTab(tabs => {
-          chrome.tabs.sendMessage(tabs[0].id, data, function (response) {
-            console.log(response, 'Tab message response received');
-          });
-        });
-      }
+    TabManager.executeForActiveTab(tabs => {
+      console.log('Tab Message Sent');
+      chrome.tabs.sendMessage(tabs[0].id, data);
     });
   }
 }
 
 class ApiManager {
+
   static getGroupsList() {
     TabManager.executeForActiveTab(tabs => {
       const currentURL = tabs[0].url;
       return jQuery.get(`${BASE_URL}/groups?uri=${currentURL}`).then((data) => {
-        console.log(data);
-        chrome.tabs.sendMessage(tabs[0].id, data, function (response) {
-
-        });
-        // MessagingService.sendRuntimeMessage(data.groups);
+        MessagingService.sendRuntimeMessage(new Event(Events.GROUP_LIST_UPDATED, JSON.parse(data).groups));
       });
     });
   }
 
-  static getByGroupsList() {
+  static getByGroupsList(group) {
+    console.log('Get By Group', group);
     TabManager.executeForActiveTab(tabs => {
-      console.log(tabs);
-      const currentURL = tabs[0].url;
-      return jQuery.get(`${BASE_URL}/group/bgu?uri=${currentURL}`).then((data) => {
+      const currentURL = 'https://en.wikipedia.org/wiki/Infection'; //tabs[0].url;
+      return jQuery.get(`${BASE_URL}/group/${group}?uri=${currentURL}`).then((data) => {
         data = JSON.parse(data);
         console.log(data.annotations);
-        chrome.tabs.sendMessage(tabs[0].id, data.annotations, function (response) {
-
-        });
+        MessagingService.sendTabMessage(data.annotations);
       });
     });
   }
@@ -83,6 +73,7 @@ class ApiManager {
     });
   }
 }
+
 
 
 class EventsRouter {

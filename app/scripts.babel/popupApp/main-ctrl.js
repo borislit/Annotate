@@ -1,9 +1,14 @@
 (function () {
   class MainCtrl {
     constructor(GroupsService) {
-      //GroupsService.getGroupsList().then((groups) => {
-      //  this.groups = groups;
-      //});
+      this.GroupsService = GroupsService;
+      GroupsService.getGroupsList().then((groups)=> {
+        this.groups = groups;
+      });
+    }
+
+    onGroupSelected(group) {
+      this.GroupsService.getGroupAnnotations(group);
     }
   }
 
