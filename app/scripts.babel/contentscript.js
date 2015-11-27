@@ -94,13 +94,11 @@ Annotator.Plugin.Content = function () {
 jQuery(function ($) {
   console.log('Up & Running...');
 
-  $("body").on("click",".thumb-up", function (e) {
-    //e.preventDefault();
+  $("body").on("click",".thumb-up", function () {
     console.log("up",ContentController.lastAnnotationShown)
   });
 
-  $("body").on("click",".thumb-down", function (e) {
-    //e.preventDefault();
+  $("body").on("click",".thumb-down", function () {
     console.log("down",ContentController.lastAnnotationShown)
   });
 
