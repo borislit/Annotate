@@ -1,5 +1,45 @@
 .popup {
-  background: white;
-  height: 500px;
+  background: #e5e5e5;
   width: 200px;
+  padding: 0 20px;
+}
+
+.popup__logo-wrapper {
+  padding: 5px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+}
+
+.popup__logo {
+  width: 100%;
+  height: 50px;
+  background: url('../images/logo-on.png') top no-repeat;
+  background-size: 100% 100%;
+}
+
+.popup__search {
+  width: 97%;
+  border: 1px solid #ccc;
+  background-color: #fff;
+}
+
+
+.popup__group {
+  border-bottom: 1px solid #d3d3d3;
+  padding: 10px 0;
+  text-align: center;
+  font-size: 16px;
+}
+
+.popup__create-new {
+  font-size: 20px;
+}
+
+.popup__footer {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.popup__add-groups {
+  text-align: right;
 }

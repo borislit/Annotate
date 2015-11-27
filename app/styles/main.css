@@ -2,6 +2,21 @@ body {
   padding: 20px;
 }
 
+.annotator-hl {
+  position: relative;
+}
+
+.annotator-hl:not(.annotator-hl-temporary):after {
+  display: block;
+  content: ' ';
+  width: 20px;
+  height: 24px;
+  background: url('chrome-extension://__MSG_@@extension_id__/images/lightbolb-icon.png') top no-repeat;
+  position: absolute;
+  top: -20px;
+  left: -5px;
+}
+
 img.thumb-up{
   width:24px;
   height:24px;

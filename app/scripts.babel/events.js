@@ -9,6 +9,7 @@ class Event {
 const Events = {
   GROUP_LIST_UPDATED: 'groups.list-updated',
   GROUPS_GET_LIST: 'groups.get-list',
+  TURN_OFF: 'turn-off',
   SEARCH:'search',
   GROUPS:'groups',
   ADD:'addAnnotation',

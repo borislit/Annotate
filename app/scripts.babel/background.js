@@ -10,7 +10,7 @@ const BASE_URL = 'http://rest.goltsman.net/annotate';
 
 class TabManager {
   static executeForActiveTab(fn) {
-    chrome.tabs.query({active: true, currentWindow: true}, fn);
+    chrome.tabs.query({active: true}, fn);
   }
 }
 
@@ -22,59 +22,33 @@ class MessagingService {
   }
 
   static sendTabMessage(data) {
-    chrome.tabs.onUpdated.addListener(function (tabId, changeInfo) {
-      if (changeInfo.status === 'complete') {
-        TabManager.executeForActiveTab(tabs => {
-          chrome.tabs.sendMessage(tabs[0].id, data, function (response) {
-            console.log(response, 'Tab message response received');
-          });
-        });
-      }
+    TabManager.executeForActiveTab(tabs => {
+      console.log('Tab Message Sent', tabs[0]);
+      chrome.tabs.sendMessage(tabs[0].id, data);
     });
   }
 }
 
 class ApiManager {
+
   static getGroupsList() {
     TabManager.executeForActiveTab(tabs => {
       const currentURL = tabs[0].url;
       return jQuery.get(`${BASE_URL}/groups?uri=${currentURL}`).then((data) => {
-        console.log(data);
-        chrome.tabs.sendMessage(tabs[0].id, data, function (response) {
-
-        });
-        // MessagingService.sendRuntimeMessage(data.groups);
+        console.log("groups: ", JSON.parse(data).groups);
+        MessagingService.sendRuntimeMessage(new Event(Events.GROUP_LIST_UPDATED, JSON.parse(data).groups));
       });
     });
   }
 
-  static getByGroupsList() {
+  static getByGroupsList(group) {
+    console.log('Get By Group', group);
     TabManager.executeForActiveTab(tabs => {
-      console.log(tabs);
-      const currentURL = tabs[0].url;
-      return jQuery.get(`${BASE_URL}/group/bgu?uri=${currentURL}`).then((data) => {
+      const currentURL = 'https://en.wikipedia.org/wiki/Infection'; //tabs[0].url;
+      return jQuery.get(`${BASE_URL}/group/${group}?uri=${currentURL}`).then((data) => {
         data = JSON.parse(data);
         console.log(data.annotations);
-        data.annotations = {"ranges":[{"start":"/div[4]/table[1]/tbody[1]/tr[1]/td[1]/table[1]/tbody[1]/tr[8]/td[1]/p[1]","startOffset":84,"end":"/div[4]/table[1]/tbody[1]/tr[1]/td[1]/table[1]/tbody[1]/tr[8]/td[1]/p[1]","endOffset":179}],"quote":"ברונזה ועד קץ השלטון הרומי ב-330 לספירה. הפורטל כולל קישורים לערכים העוסקים בהיסטוריה מדינית וצ","highlights":[{}],"text":"tfgh"};
-        data.annotations.annotator_schema_version = "v1.0";
-        data.annotationscreated = new Date().toISOString();
-        data.annotationsupdated = new Date().toISOString();
-        data.annotationsuri = window.location.href;
-        data.annotationsuser = "alice";
-        data.annotationsranges = [
-            {
-              "start": "",
-              "end": "",
-              "startOffset": 0,
-              "endOffset": 1
-            }
-          ];
-        data.annotationsconsumer = "annotateit";
-        data.annotationsgroup = "sce";
-
-        chrome.tabs.sendMessage(tabs[0].id, data.annotations, function (response) {
-
-        });
+        MessagingService.sendTabMessage(data.annotations);
       });
     });
   }
@@ -101,30 +75,77 @@ class ApiManager {
   }
 }
 
-class EventsRouter {
-  static initRouting() {
-    chrome.runtime.onMessage.addListener(EventsRouter.handleIncomingMessage);
+class LocalManager {
+
+  constructor() {
+    this._defaultGroup = "sce";
+    this._secletedGroup = "sce";
+
+    this._data = {
+      "sce" : [],
+      "demo" : []
+    };
+
+    _.bindAll(this, ["getByGroupsList", "getGroupsList", "addAnnotation", "addAnnotation"]);
   }
 
-  static handleIncomingMessage(event) {
-    let eventType = event && event.event;
-    switch (eventType) {
-      case Events.SEARCH:
-        ApiManager.getByGroupsList();
-        break;
-      case Events.GROUPS:
-        ApiManager.getGroupsList();
-        break;
-      case Events.ADD:
-        ApiManager.addAnnotation(event.data);
-        break;
-      case Events.UPDATE:
-        ApiManager.update(event.data);
-        break;
-    }
+  getByGroupsList(group) {
+    if (!group)
+      group = this._defaultGroup;
+
+    this._secletedGroup = group;
+    MessagingService.sendRuntimeMessage(new Event(Events.GROUP_LIST_UPDATED, _.clone(this._data[group])));
   }
+
+  getGroupsList() {
+    var groups = _.keys(this._data);
+    MessagingService.sendRuntimeMessage(new Event(Events.GROUP_LIST_UPDATED, groups));
+  }
+
+  addAnnotation(model) {
+    model.group = this._secletedGroup;
+    this._data[this._secletedGroup].push(model);
+  }
+
+  update(model) {
+
+  }
+
+
 }
 
-EventsRouter.initRouting();
+class EventsRouter {
 
-console.log('\'Allo \'Allo! Event Page for Page Action Yo');
+  constructor(manager) {
+    this._manager = manager;
+  }
+
+  start() {
+    console.log('\'Allo \'Allo! Event Page for Page Action Yo');
+
+    chrome.runtime.onMessage.addListener(this.handleIncomingMessage.bind(this));
+    return this;
+  }
+
+   handleIncomingMessage(event) {
+     let eventType = event && event.event;
+     let manager = this._manager;
+
+     switch (eventType) {
+       case Events.SEARCH:
+         manager.getByGroupsList(event.data);
+         break;
+       case Events.GROUPS_GET_LIST:
+         manager.getGroupsList();
+         break;
+       case Events.ADD:
+         manager.addAnnotation(event.data);
+         break;
+       case Events.UPDATE:
+         manager.update(event.data);
+         break;
+     }
+   }
+}
+
+new EventsRouter(ApiManager).start();

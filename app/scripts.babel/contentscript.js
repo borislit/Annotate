@@ -23,15 +23,16 @@ var ContentController = {
       "group": "sce"
     };
   },
+
   // request sync
   fetch: function (callback) {
-    var proxy = _.once(function (data) {
+    var proxy = function (data) {
       console.info("fetch() data-> ", data);
       callback(_.clone(data));
-    });
+    };
 
     chrome.runtime.onMessage.addListener(proxy);
-    chrome.runtime.sendMessage(new Event(Events.SEARCH));
+    chrome.runtime.sendMessage(new Event(Events.SEARCH, "sce"));
   },
 
   // send updated data
@@ -43,8 +44,7 @@ var ContentController = {
   // send new model
   create: function (model) {
     console.info("an annotation has just been created!", model);
-    model = _.defaults(model,ContentController.defualtModle())
-
+    model = _.defaults(model, ContentController.defualtModle());
     chrome.runtime.sendMessage(new Event(Events.ADD, model));
   },
 
@@ -71,12 +71,19 @@ Annotator.Plugin.Content = function () {
     pluginInit: function () {
       console.log('content plugin loaded');
 
-      this.annotator.subscribe("annotationCreated", ContentController.create);
-      this.annotator.subscribe("annotationUpdated", ContentController.update);
-      this.annotator.subscribe("annotationDeleted", ContentController.destroy);
+      var annotator = this.annotator;
+      var onSync = function(data) {
+        //TODO: remove before loading new
+        annotator.loadAnnotations(data);
+      };
+
+      annotator.subscribe("annotationCreated", ContentController.create);
+      annotator.subscribe("annotationUpdated", ContentController.update);
+      annotator.subscribe("annotationDeleted", ContentController.destroy);
       this.annotator.subscribe("annotationViewerShown", ContentController.annotationLoaded.bind(ContentController));
 
-      ContentController.fetch(this.annotator.loadAnnotations.bind(this.annotator));
+      ContentController.fetch(onSync);
+
       return this;
     }
   };

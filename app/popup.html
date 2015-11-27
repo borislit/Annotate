@@ -13,14 +13,27 @@
   </head>
   <body class="popup" ng-csp ng-app="annotate">
     <div ng-controller="MainCtrl as main">
-      <div class="popup__logo">Logo</div>
-      <div class="popup__groups-list">
-        <div ng-repeat="group in main.groups">{{group}}</div>
+      <div class="popup__logo-wrapper">
+        <div class="popup__logo"></div>
       </div>
-      <div class="popup__footer">Logo</div>
+      <div class="popup__groups-list">
+        <div class="popup__group">
+          <input class="popup__search" type="text" name="search" ng-model="main.filterCriteria">
+        </div>
+        <div class="popup__group popup__create-new" ng-click="main.switchToAddAddNew()" ng-if="!main.isInAddMode">+ Create New</div>
+        <div class="popup__group" ng-if="main.isInAddMode">
+          <input class="popup__search" type="text" name="new-cat" ng-model="main.groupToAdd">
+          <div class="popup__add-groups" ng-click="main.addGroup(main.groupToAdd)">
+            <button type="button">Add</button>
+          </div>
+        </div>
+        <div ng-repeat="group in filtered = (main.groups | filter: main.filterCriteria)" class="popup__group" ng-click="main.onGroupSelected(group)">{{group}}</div>
+        <div ng-if="filtered.length == 0">Empty</div>
+      </div>
     </div>
     <!-- build:js scripts/popup-vendor.js -->
     <!-- bower:js -->
+    <script src="bower_components/jquery/dist/jquery.min.js"></script>
     <script src="bower_components/angular/angular.js"></script>
     <!-- endbower -->
     <!-- endbuild -->
