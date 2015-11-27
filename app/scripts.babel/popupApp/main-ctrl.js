@@ -1,8 +1,11 @@
 (function () {
   class MainCtrl {
-    constructor(GroupsService, $timeout) {
+    constructor(GroupsService, MessagingService, Events) {
+      this.isOn = true;
       this.isInAddMode = false;
       this.GroupsService = GroupsService;
+      this.MessagingService = MessagingService;
+      this.Events = Events;
       GroupsService.getGroupsList().then((groups)=> {
         this.groups = groups;
       });
@@ -21,9 +24,19 @@
       this.groupToAdd = '';
       this.isInAddMode = false;
     }
+
+    toggle(){
+      if(this.isOn){
+        this.MessagingService.sendMessage(this.Events.TURN_OFF,[]);
+      } else {
+        this.MessagingService.sendMessage(new Event(Events.SEARCH, "sce"));
+      }
+
+      this.isOn = !this.isOn;
+    }
   }
 
-  MainCtrl.$inject = ['GroupsService', '$timeout'];
+  MainCtrl.$inject = ['GroupsService', 'MessagingService', 'Events'];
 
   angular.module('annotate').controller('MainCtrl', MainCtrl);
 })();
