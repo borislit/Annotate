@@ -1,3 +1,25 @@
 body {
   padding: 20px;
 }
+
+img.thumb-up{
+  width:24px;
+  height:24px;
+  float: right;
+  margin-right: 12px;
+  position: relative;
+  top: 5px;
+  right: 5px;
+  padding-left: 5px;
+}
+
+img.thumb-down{
+  width:24px;
+  height:24px;
+  float: left;
+  position: relative;
+  top: 8px;
+  left: 5px;
+  margin-right: 5px;
+  padding-right: 5px;
+}

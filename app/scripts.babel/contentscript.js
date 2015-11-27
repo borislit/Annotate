@@ -43,7 +43,8 @@ var ContentController = {
   // send new model
   create: function (model) {
     console.info("an annotation has just been created!", model);
-    model = _.defaults(ContentController.defualtModle(),model)
+    model = _.defaults(model,ContentController.defualtModle())
+
     chrome.runtime.sendMessage(new Event(Events.ADD, model));
   },
 
@@ -51,9 +52,20 @@ var ContentController = {
   destroy: function (model) {
     console.info("an annotation has just been deleted!", model);
     // TODO: add destory
+  },
+
+  annotationLoaded: function(view,annotation){
+    console.log(annotation);
+    ContentController.lastAnnotationShown = annotation;
+  },
+  getLastAnnotationShown:function(){
+    return ContentController.lastAnnotationShown;
   }
 };
-
+Annotator.Viewer.prototype.html = {
+  element: '<div class="annotator-outer annotator-viewer">  <ul class="annotator-widget annotator-listing"></ul></div>',
+  item: '<li class="annotator-annotation annotator-item">  <img src="http://localhost:9000/images/down.png" class="thumb-down"><img src="http://localhost:9000/images/up.png" class="thumb-up"></li>'
+};
 Annotator.Plugin.Content = function () {
   return {
     pluginInit: function () {
@@ -62,16 +74,28 @@ Annotator.Plugin.Content = function () {
       this.annotator.subscribe("annotationCreated", ContentController.create);
       this.annotator.subscribe("annotationUpdated", ContentController.update);
       this.annotator.subscribe("annotationDeleted", ContentController.destroy);
+      this.annotator.subscribe("annotationViewerShown", ContentController.annotationLoaded.bind(ContentController));
 
       ContentController.fetch(this.annotator.loadAnnotations.bind(this.annotator));
-
       return this;
     }
   };
 };
 
+
+
 jQuery(function ($) {
   console.log('Up & Running...');
+
+  $("body").on("click",".thumb-up", function (e) {
+    //e.preventDefault();
+    console.log("up",ContentController.lastAnnotationShown)
+  });
+
+  $("body").on("click",".thumb-down", function (e) {
+    //e.preventDefault();
+    console.log("down",ContentController.lastAnnotationShown)
+  });
 
   $('.mw-body-content').annotator().annotator('addPlugin', "Content");
 });

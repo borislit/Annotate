@@ -55,6 +55,23 @@ class ApiManager {
       return jQuery.get(`${BASE_URL}/group/bgu?uri=${currentURL}`).then((data) => {
         data = JSON.parse(data);
         console.log(data.annotations);
+        data.annotations = {"ranges":[{"start":"/div[4]/table[1]/tbody[1]/tr[1]/td[1]/table[1]/tbody[1]/tr[8]/td[1]/p[1]","startOffset":84,"end":"/div[4]/table[1]/tbody[1]/tr[1]/td[1]/table[1]/tbody[1]/tr[8]/td[1]/p[1]","endOffset":179}],"quote":"ברונזה ועד קץ השלטון הרומי ב-330 לספירה. הפורטל כולל קישורים לערכים העוסקים בהיסטוריה מדינית וצ","highlights":[{}],"text":"tfgh"};
+        data.annotations.annotator_schema_version = "v1.0";
+        data.annotationscreated = new Date().toISOString();
+        data.annotationsupdated = new Date().toISOString();
+        data.annotationsuri = window.location.href;
+        data.annotationsuser = "alice";
+        data.annotationsranges = [
+            {
+              "start": "",
+              "end": "",
+              "startOffset": 0,
+              "endOffset": 1
+            }
+          ];
+        data.annotationsconsumer = "annotateit";
+        data.annotationsgroup = "sce";
+
         chrome.tabs.sendMessage(tabs[0].id, data.annotations, function (response) {
 
         });
