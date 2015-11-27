@@ -23,7 +23,7 @@ class MessagingService {
 
   static sendTabMessage(data) {
     TabManager.executeForActiveTab(tabs => {
-      console.log('Tab Message Sent');
+      console.log('Tab Message Sent', tabs[0]);
       chrome.tabs.sendMessage(tabs[0].id, data);
     });
   }
@@ -74,40 +74,31 @@ class ApiManager {
   }
 }
 
-
-
 class EventsRouter {
-
-  constructor(manager) {
-    this._manager = manager;
-  }
-
-  start() {
-    console.log('\'Allo \'Allo! Event Page for Page Action Yo');
-
+  static initRouting() {
     chrome.runtime.onMessage.addListener(EventsRouter.handleIncomingMessage);
-    return this;
   }
 
-  handleIncomingMessage(event) {
+  static handleIncomingMessage(event) {
     let eventType = event && event.event;
-    let manager = this._manager;
-
     switch (eventType) {
       case Events.SEARCH:
-        manager.getByGroupsList();
+        ApiManager.getByGroupsList(event.data);
         break;
-      case Events.GROUPS:
-        manager.getGroupsList();
+      case Events.GROUPS_GET_LIST:
+        ApiManager.getGroupsList();
         break;
       case Events.ADD:
-        manager.addAnnotation(event.data);
+        ApiManager.addAnnotation(event.data);
         break;
       case Events.UPDATE:
-        manager.update(event.data);
+        ApiManager.update(event.data);
         break;
     }
   }
 }
 
-new EventsRouter(ApiManager).start();
+EventsRouter.initRouting();
+
+console.log('\'Allo \'Allo! Event Page for Page Action Yo');
+
