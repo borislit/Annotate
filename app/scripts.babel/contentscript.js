@@ -2,6 +2,10 @@
 
 console.log('\'Allo \'Allo! Content script is up');
 
+var initPlugin = function(data) {
+  console.log("-----");
+  $('.mw-body-content').annotator().annotator('addPlugin', "Content", data);
+};
 
 var ContentController = {
   defualtModle: function () {
@@ -24,15 +28,21 @@ var ContentController = {
     };
   },
 
+  _onDestroy : _.noop,
+
   // request sync
-  fetch: function (callback) {
-    var proxy = function (data) {
-      console.info("fetch() data-> ", data);
-      callback(_.clone(data));
-    };
+  init: function () {
+   var proxy = function(data) {
+     ContentController._onDestroy();
+     initPlugin(data);
+   };
 
     chrome.runtime.onMessage.addListener(proxy);
     chrome.runtime.sendMessage(new Event(Events.SEARCH, "sce"));
+  },
+
+  registerOnDestroy : function(func) {
+    ContentController._onDestroy = func;
   },
 
   // send updated data
@@ -62,27 +72,27 @@ var ContentController = {
     return ContentController.lastAnnotationShown;
   }
 };
+
+
 Annotator.Viewer.prototype.html = {
   element: '<div class="annotator-outer annotator-viewer">  <ul class="annotator-widget annotator-listing"></ul></div>',
   item: '<li class="annotator-annotation annotator-item">  <img src="http://localhost:9000/images/down.png" class="thumb-down"><img src="http://localhost:9000/images/up.png" class="thumb-up"></li>'
 };
-Annotator.Plugin.Content = function () {
+
+Annotator.Plugin.Content = function (element, data) {
   return {
     pluginInit: function () {
       console.log('content plugin loaded');
 
       var annotator = this.annotator;
-      var onSync = function(data) {
-        //TODO: remove before loading new
-        annotator.loadAnnotations(data);
-      };
 
       annotator.subscribe("annotationCreated", ContentController.create);
       annotator.subscribe("annotationUpdated", ContentController.update);
       annotator.subscribe("annotationDeleted", ContentController.destroy);
-      this.annotator.subscribe("annotationViewerShown", ContentController.annotationLoaded.bind(ContentController));
+      annotator.subscribe("annotationViewerShown", ContentController.annotationLoaded.bind(ContentController));
 
-      ContentController.fetch(onSync);
+      ContentController.registerOnDestroy(annotator.destroy.bind(annotator));
+      annotator.loadAnnotations(data);
 
       return this;
     }
@@ -102,5 +112,5 @@ jQuery(function ($) {
     console.log("down",ContentController.lastAnnotationShown)
   });
 
-  $('.mw-body-content').annotator().annotator('addPlugin', "Content");
+  ContentController.init();
 });
